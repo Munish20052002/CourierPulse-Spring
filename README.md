@@ -36,58 +36,6 @@ A Spring Boot (Thymeleaf + JPA) web application for managing courier operations:
 ### Configuration
 The app is configured for a local MySQL database named `courier` and runs under the context path `/myapp` on port `8080`.
 
-`src/main/resources/application.properties` (defaults):
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/courier
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.open-in-view=false
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-
-spring.servlet.multipart.enabled=true
-spring.servlet.multipart.max-file-size=10MB
-spring.servlet.multipart.max-request-size=15MB
-
-server.port=8080
-server.servlet.context-path=/myapp
-```
-
-Update `spring.datasource.*` to match your local credentials. For production, prefer environment variables or a profile-specific properties file.
-
-### Database Setup
-1. Create the database:
-   ```sql
-   CREATE DATABASE courier CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-   ```
-2. Create a MySQL user or use `root` and grant access.
-3. Ensure the credentials in `application.properties` are correct.
-
-### Build and Run
-You can run the app directly or build a WAR for deployment.
-
-#### Option A: Run directly (dev)
-```bash
-# From project root
-mvn spring-boot:run
-```
-Then open: `http://localhost:8080/myapp`
-
-#### Option B: Build WAR and run as executable
-```bash
-mvn clean package
-java -jar target/finance-0.0.1-SNAPSHOT.war
-```
-Then open: `http://localhost:8080/myapp`
-
-#### Option C: Deploy WAR to external Tomcat
-- Build: `mvn clean package`
-- Deploy `target/finance-0.0.1-SNAPSHOT.war` to your Tomcat `webapps/`
-- Access via your server host and context path (`/myapp`)
-
 ### Default Pages
 Some notable Thymeleaf pages under `templates/`:
 - `Login.html` — login page
@@ -95,19 +43,6 @@ Some notable Thymeleaf pages under `templates/`:
 - `CourierForm.html`, `view_courier.html`, `view_courier_details.html`, `trackingCourier.html`
 - `EmployeeForm.html`, `viewEmployee.html`, `manageEmployee.html`
 - `Country.html`, `state.html`, `District.html` and AJAX partials
-
-Common fragments are under `templates/Layout/Fragments/` and `templates/common/`.
-
-### Environment Variables (recommended)
-Instead of committing secrets, configure via env vars or a profile:
-```bash
-# Windows PowerShell
-set SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/courier
-set SPRING_DATASOURCE_USERNAME=root
-set SPRING_DATASOURCE_PASSWORD=******
-set SERVER_PORT=8080
-set SERVER_SERVLET_CONTEXT_PATH=/myapp
-```
 
 ### Dependencies of Interest
 - `spring-boot-starter-thymeleaf` — view rendering
@@ -122,9 +57,6 @@ set SERVER_SERVLET_CONTEXT_PATH=/myapp
 - **DB connection errors**: verify MySQL is running, DB exists, and credentials match.
 - **Port already in use**: change `server.port` or stop the conflicting process.
 - **Static assets not refreshing**: `spring.thymeleaf.cache=false` is already set for dev.
-
-### License
-Add your chosen open-source license here (e.g., MIT, Apache-2.0).
 
 ### Acknowledgements
 - Spring Boot team and community
