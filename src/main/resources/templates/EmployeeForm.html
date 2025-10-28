@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickDispatch</title>
+<link th:href="@{/css/style.css}" rel="stylesheet">
+<link th:href="@{/css/toast.css}" rel="stylesheet">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+	integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Remix Icon CDN -->
+<link
+	href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+	rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+
+<script type="text/javascript">
+
+function getDesignationByDepartementId(departmentId, targetElement) {
+
+	const xhttp = new XMLHttpRequest();
+	xhttp.open("GET", "/myapp/getDesignationByDepartementId?departmentId=" + departmentId);
+
+	xhttp.onload = function() {
+
+		if (xhttp.status == 200) {
+
+			console.log("response: ", this.responseText);
+			document.getElementById(targetElement).innerHTML = this.responseText;
+
+		}
+	}
+
+	xhttp.send();
+
+}
+
+	function getStates(countryId, targetElement) {
+		console.log("Hello I am in getState function, the countryId is: "
+				+ countryId);
+		console.log("targetElement:  "
+				+ targetElement);
+
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/myapp/getStatesByCountryId?countryId=" + countryId);
+
+		xhttp.onload = function() {
+
+			if (xhttp.status == 200) {
+
+				console.log("response: ", this.responseText);
+				document.getElementById(targetElement).innerHTML = this.responseText;
+
+			}
+		}
+
+		xhttp.send();
+
+	}
+	function getDistricts(stateId, target) {
+	    console.log("Hello, I am in the getDistrict function, the State ID is: " + stateId);
+	    console.log("target: " + target);
+
+	    const xhttp = new XMLHttpRequest();
+	    xhttp.open("GET", "/myapp/getDistrictsByStateId?stateId=" + stateId);
+
+	    xhttp.onload = function() {
+	        if (xhttp.status == 200) {
+	            console.log("response: ", this.responseText);
+	            
+	            // Check if the target element exists
+	            const targetElement = document.getElementById(target);
+	            if (targetElement) {
+	                targetElement.innerHTML = this.responseText;
+	            } else {
+	                console.error("Element with ID " + target + " not found.");
+	            }
+	        } else {
+	            console.error("Request failed. Status: " + xhttp.status);
+	        }
+	    };
+
+	    xhttp.onerror = function() {
+	        console.error("Request error occurred.");
+	    };
+
+	    xhttp.send();
+	}
+
+</script>
+
+
+
+</head>
+
+
+
+<body>
+
+
+	<main class="d-flex">
+		<!-- Sidebar -->
+		<div th:replace="~{Layout/Fragments/header.html :: header}"></div>
+		<!-- Sidebar Ended Here  -->
+
+		<div class="main-content  p-0 ">
+
+			<!-- TopBar -->
+			<div th:replace="~{Layout/Fragments/header.html :: topbar}"></div>
+			<!-- /TopBar -->
+
+
+			<!-- Message -->
+
+			<!-- Positive Message -->
+			
+
+			<!-- /Message -->
+
+
+
+			<!-- Main Page Data  -->
+			<div class="container-fluid px-3 p-0 pb-5">
+				<div
+					class="d-flex flex-wrap gap-2 page-header justify-content-between align-items-center">
+
+					<h3 class="page-heading page-dir">Human Resource ❯ Employee ❯
+						Add Employee</h3>
+					<p class="header-date m-0 " id="current-date"></p>
+				</div>
+
+				<div class="d-flex mb-3">
+					<a href="#" class="back-arrow pback" onclick="goBack()"> <i
+						class="ri-arrow-left-line"></i> <span class="text-danger px-3">Back
+							to QuickDispatch Home</span>
+					</a>
+				</div>
+
+				<!-- Main Data Container -->
+
+		<div th:if="${positiveMessage}">
+				<div th:text="${positiveMessage}" style="color: green;"></div>
+			</div>
+
+			<!-- Negative Message -->
+			<div th:if="${negativeMessage}">
+				<div
+					th:replace="~{Layout/Fragments/message.html :: negativeMessage}"></div>
+			</div>
+
+
+
+				<div class="data-container p-4 bg-primary-subtle">
+					<div class="row justify-content-center">
+						<div class="col-md-11 ">
+							<div class="head fs-18 mb-4">Please Fill Details</div>
+
+							<!-- Form Starts Here  -->
+
+							<form th:action="@{/saveEmployee}" th:object="${employee}"
+								method="post" id="myForm" enctype="multipart/form-data">
+
+								<input th:field="*{id}" type="hidden" /> <input
+									th:field="*{dateOfJoining}" type="hidden" /> <input
+									th:field="*{status}" type="hidden" />
+								<!-- 1ST  ROW (Client) -->
+
+								<div class="row  pb-3 differ">
+
+									<div class="col-md-12">
+										<div class="head py-3 ">
+											Basic <sub class="ms-1">Detail(s)</sub>
+										</div>
+									</div>
+									<hr>
+
+									<!-- row 2 -->
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Prefix</label> <select
+												th:field="*{prefix}"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Prefix</option>
+												<option value="mr">Mr.</option>
+												<option value="mrs">Mrs.</option>
+												<option value="miss">Miss.</option>
+												<option value="dr">Dr.</option>
+											</select> <span th:if="${#fields.errors('prefix')}"
+												th:errors="*{prefix}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">First Name</label> <input
+												th:field="*{firstName}" type="text"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('firstName')}"
+												th:errors="*{firstName}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Last Name</label> <input
+												th:field="*{lastName}" type="text"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('lastName')}"
+												th:errors="*{lastName}" th:errorClass="error-message">Field
+												ERROR</span>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">DOB</label> <input
+												th:field="*{dob}" type="date"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('dob')}" th:errors="*{dob}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Contact</label> <input
+												th:field="*{contact}" type="text"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('contact')}" th:errors="*{contact}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Alternate Contact</label>
+											<input th:field="*{alternateContact}" type="text"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('alternateContact')}"
+												th:errors="*{alternateContact}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Email</label> <input
+												th:field="*{email}" type="text"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('email')}" th:errors="*{email}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Photo</label> <input
+												th:field="*{tempPhoto}" type="file" name="tempPhoto"
+												accept=".jpg, .jpeg, .png"
+												class="form-control org-form-input" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Gender</label> <select
+												th:field="*{gender}"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Gender</option>
+												<option value="male">Male</option>
+												<option value="female">Female</option>
+												<option value="other">Other</option>
+											</select> <span th:if="${#fields.errors('gender')}"
+												th:errors="*{gender}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Marital Status</label> <select
+												th:field="*{maritalStatus}"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Marital Status</option>
+												<option value="married">Married</option>
+												<option value="unmarried">Unmarried</option>
+											</select> <span th:if="${#fields.errors('maritalStatus')}"
+												th:errors="*{maritalStatus}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+									<!-- row 2 ends -->
+
+								</div>
+
+								<div id="address-container">
+
+									<div class="row  pb-3 differ mt-5"
+										th:each="address, addressStatus : *{addresses}">
+
+										<div class="col-md-12">
+											<div class="head py-3 ">
+												Address <sub class="ms-1">Detail(s)</sub>
+											</div>
+										</div>
+										<hr>
+										<input type="hidden"
+											th:field="*{addresses[__${addressStatus.index}__].id}">
+										<!-- row 2 -->
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">AdressLine 1</label> <input
+													th:field="*{addresses[__${addressStatus.index}__].addressLine1}"
+													type="text"
+													class="form-control org-form-input add-org-form-input" />
+
+												<span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].addressLine1')}"
+													th:errors="*{addresses[__${addressStatus.index}__].addressLine1}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">AdressLine 2</label> <input
+													th:field="*{addresses[__${addressStatus.index}__].addressLine2}"
+													type="text"
+													class="form-control org-form-input add-org-form-input" />
+
+												<span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].addressLine2')}"
+													th:errors="*{addresses[__${addressStatus.index}__].addressLine2}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">Country</label> <select
+													id="country-field"
+													th:field="*{addresses[__${addressStatus.index}__].district.state.country.id}"
+													th:onchange="|getStates(this.value, 'state-${addressStatus.index}')|"
+													class="form-select org-form-input add-org-form-input">
+													<option value="">Select Country</option>
+													<option th:each="c : ${countries}" th:value="${c.id}"
+														th:text="${c.countryName}">India</option>
+												</select> <span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].district.state.country.id')}"
+													th:errors="*{addresses[__${addressStatus.index}__].district.state.country.id}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">State</label> <select
+													th:id="state-+${addressStatus.index}"
+													th:field="*{addresses[__${addressStatus.index}__].district.state.id}"
+													th:onchange="|getDistricts(this.value, 'dist-${addressStatus.index}')|"
+													class="form-select org-form-input add-org-form-input">
+													<option value="">Select State</option>
+													<option th:each="c : ${states}" th:value="${c.id}"
+														th:text="${c.stateName}">India</option>
+
+												</select> <span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].district.state.id')}"
+													th:errors="*{addresses[__${addressStatus.index}__].district.state.id}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">District</label> <select
+													th:id="dist-+${addressStatus.index}"
+													th:field="*{addresses[__${addressStatus.index}__].district.id}"
+													class="form-select org-form-input add-org-form-input">
+													<option value="">Select District</option>
+													<option th:each="c : ${districts}" th:value="${c.id}"
+														th:text="${c.districtName}">India</option>
+
+												</select> <span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].district.id')}"
+													th:errors="*{addresses[__${addressStatus.index}__].district.id}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">City</label> <input
+													th:field="*{addresses[__${addressStatus.index}__].city}"
+													type="text"
+													class="form-control org-form-input add-org-form-input" />
+
+												<span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].city')}"
+													th:errors="*{addresses[__${addressStatus.index}__].city}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">Pincode</label> <input
+													th:field="*{addresses[__${addressStatus.index}__].pincode}"
+													type="text"
+													class="form-control org-form-input add-org-form-input" />
+
+												<span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].pincode')}"
+													th:errors="*{addresses[__${addressStatus.index}__].pincode}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">Landmark</label> <input
+													th:field="*{addresses[__${addressStatus.index}__].landmark}"
+													type="text"
+													class="form-control org-form-input add-org-form-input" />
+
+												<span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].landmark')}"
+													th:errors="*{addresses[__${addressStatus.index}__].landmark}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="d-flex flex-column">
+												<label class="org-form-label my-2 ">Address Type</label> <select
+													th:field="*{addresses[__${addressStatus.index}__].addressType}"
+													class="form-select org-form-input add-org-form-input">
+													<option value="">Select Address Type</option>
+													<option value="current">Current Address</option>
+													<option value="permanent">Permanent Address</option>
+													<option value="other">Other</option>
+												</select> <span
+													th:if="${#fields.errors('addresses[__${addressStatus.index}__].addressType')}"
+													th:errors="*{addresses[__${addressStatus.index}__].addressType}"
+													th:errorClass="error-message">Field ERROR</span>
+
+											</div>
+										</div>
+
+
+										<!-- row 2 ends -->
+
+									</div>
+
+
+								</div>
+
+								<!-- New Code-> +, - Button -->
+								<div class="col-md-12 Weight-subdiv-hide">
+									<div class="d-flex  justify-content-center align-items-center">
+										<div class="add-column">
+											<p
+												style="background-color: transparent; border: none; cursor: pointer;"
+												id="add-address">
+												<span> <i class="ri-add-circle-line "
+													style="font-size: 28px; color: #198754;"></i>
+												</span>
+											</p>
+										</div>
+
+										<div class="remove-column">
+											<p
+												style="background-color: transparent; border: none; cursor: pointer;"
+												id="remove-address">
+												<span> <i class="ri-close-circle-line text-danger"
+													style="font-size: 28px;"></i>
+												</span>
+											</p>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="row  pb-3 differ mt-5">
+
+									<div class="col-md-12">
+										<div class="head py-3 ">
+											Profile <sub class="ms-1">Detail(s)</sub>
+										</div>
+									</div>
+									<hr>
+
+									<!-- row 2 -->
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Department</label> <select
+												th:field="*{designation.department.id}"
+												
+												th:onChange="getDesignationByDepartementId(this.value,'desig');"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Department</option>
+												<option th:each="d : ${departments}" th:value="${d.id}"
+														th:text="${d.departmentName}">India</option>
+
+											</select> <span th:if="${#fields.errors('designation.department.id')}"
+												th:errors="*{designation.department.id}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Designation</label> 
+											<select id = "desig"
+												th:field="*{designation.id}"
+												class="form-select org-form-input add-org-form-input">
+												
+												<option th:each="d : ${designations}" th:value="${d.id}"
+														th:text="${d.designationName}">India</option>
+												
+											</select> <span th:if="${#fields.errors('designation')}"
+												th:errors="*{designation.id}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2 ">Report To
+												(Senior)</label> <select th:field="*{senior}"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Senior</option>
+												<option value="1">Employee-01</option>
+												<option value="2">Employee-02</option>
+												<option value="3">Employee-03</option>
+											</select> <span th:if="${#fields.errors('senior')}"
+												th:errors="*{senior}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Experience Level</label>
+											<select th:field="*{experienceLevel}"
+												class="form-select org-form-input add-org-form-input"
+												onchange="manageExperienceVisibility(this.value);">
+												<option value="">Select Experience Level</option>
+												<option value="fresher">Fresher</option>
+												<option value="experience">Experience</option>
+											</select> <span th:if="${#fields.errors('experienceLevel')}"
+												th:errors="*{experienceLevel}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none;" id="experience">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2 ">Experience
+												(years)</label> <input th:field="*{experience}" type="text"
+												class="form-control org-form-input add-org-form-input" />
+
+											<!-- <span th:if="${#fields.errors('branchName')}"
+													th:errors="*{branchName}" th:errorClass="error-message">Field
+														ERROR</span>  -->
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2 ">Salary</label> <input
+												th:field="*{salary}" type="number"
+												class="form-control org-form-input add-org-form-input" /> <span
+												th:if="${#fields.errors('salary')}" th:errors="*{salary}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+
+
+										<!-- row 2 ends -->
+
+									</div>
+								</div>
+
+
+
+
+
+
+								<div class="row  pb-3 differ mt-5">
+									<div class="col-md-12">
+										<div class="head py-3 ">
+											Bank <sub class="ms-1">Details(s)</sub>
+										</div>
+									</div>
+									<hr>
+									<input type="hidden" th:field="*{bank.id}">
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2">Account Type</label> <select
+												th:field="*{bank.accountType}" id="accountTypes"
+												class="form-select org-form-input add-org-form-input">
+												<option value="">Select Account Type</option>
+												<option value="current">Current</option>
+												<option value="saving">Saving</option>
+											</select> <span th:if="${#fields.errors('bank.accountType')}"
+												th:errors="*{bank.accountType}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+
+									<!-- row 0 -->
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2">Bank Name</label> <input
+												th:field="*{bank.bankName}" type="text"
+												class="form-control org-form-input add-org-form-input">
+
+											<span th:if="${#fields.errors('bank.bankName')}"
+												th:errors="*{bank.bankName}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2">Bank Branch Name</label> <input
+												th:field="*{bank.branchName}" type="text"
+												class="form-control org-form-input add-org-form-input">
+
+											<span th:if="${#fields.errors('bank.branchName')}"
+												th:errors="*{bank.branchName}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+											<label class="org-form-label my-2">IFSC</label> <input
+												th:field="*{bank.ifscCode}" type="text"
+												class="form-control org-form-input add-org-form-input">
+
+											<span th:if="${#fields.errors('bank.ifscCode')}"
+												th:errors="*{bank.ifscCode}" th:errorClass="error-message">Field
+												ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2">Account Holder
+												Name</label> <input th:field="*{bank.accountHolderName}" type="text"
+												class="form-control org-form-input add-org-form-input">
+
+											<span th:if="${#fields.errors('bank.accountHolderName')}"
+												th:errors="*{bank.accountHolderName}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="d-flex flex-column">
+
+											<label class="org-form-label my-2">Account Number</label> <input
+												th:field="*{bank.accountNumber}" type="text"
+												class="form-control org-form-input add-org-form-input">
+
+											<span th:if="${#fields.errors('bank.accountNumber')}"
+												th:errors="*{bank.accountNumber}"
+												th:errorClass="error-message">Field ERROR</span>
+
+										</div>
+									</div>
+									<!-- row 3 ends -->
+
+								</div>
+
+
+
+
+								<div class="row my-4 gap-3">
+									<div class="col-md-12">
+
+										<div class="d-flex justify-content-center">
+
+											<div class="col-md-2 me-5">
+												<button type="reset" class="btn btn-danger"
+													style="width: 100%;" th:onclick="confirmReset()">Reset</button>
+											</div>
+
+											<div class="col-md-2">
+												<button type="submit" class="btn btn-primary"
+													style="width: 100%;">Submit</button>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</form>
+							<!-- Form Ends Here -->
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+		<!-- <div th:replace="Layout/Fragments/footer.html :: footer"></div> -->
+
+	</main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- Script  -->
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+		integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+		integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+		crossorigin="anonymous"></script>
+	<!-- Custom Js Files  -->
+	<script th:src="@{/js/custom.js}"></script>
+
+
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+
+
+
+	<!-- Calculate FinalCharges -->
+	<script type="text/javascript">
+		
+	function manageExperienceVisibility(level){
+		if(level == 'experience'){
+			document.getElementById('experience').style.display='block';
+		}else{
+			document.getElementById('experience').style.display='none';
+			
+		}
+	}
+	
+	</script>
+
+
+
+	<script>
+
+    $(document).ready(function() {
+       var maxRange=3;
+
+        $('#add-address').click(function() {
+        	
+        	var container = $('#address-container');
+        	
+            var index = container.children().length;
+            
+            var countryHtml = $("#country-field").html();
+            
+            console.log("container : ", container);
+            console.log("index: ", index);
+            
+            
+            if(index < maxRange){
+            	
+	            console.log("tableBody : ", container);
+	            console.log("index: ", index);
+	            // th:onChange="calculateAllWeight();"
+	            
+	            var newRowHTML = `
+	            	
+	            	<div class="row  pb-3 differ mt-5" >
+
+					<div class="col-md-12">
+						<div class="head py-3 ">
+							Address <sub class="ms-1">Detail(s)</sub>
+						</div>
+					</div>
+					<hr>
+
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">AdressLine 1</label> <input
+								name="addresses[${index}].addressLine1"
+								type="text"
+								class="form-control org-form-input add-org-form-input" />
+
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">AdressLine 2</label> <input
+								name="addresses[${index}].addressLine2"
+								type="text"
+								class="form-control org-form-input add-org-form-input" />
+
+							
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">Country</label> <select
+								name="addresses[${index}].district.state.country.id"
+								onchange="getStates(this.value, 'state-${index}')"
+								class="form-select org-form-input add-org-form-input">
+								
+								${countryHtml}
+								
+							</select>
+
+							
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">State</label> <select
+								id="state-${index}"
+								name="addresses[${index}].district.state.id"
+								onchange="getDistricts(this.value, 'dist-${index}')"
+								class="form-select org-form-input add-org-form-input">
+								<option value="">Select State</option>
+
+							</select>
+
+							
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">District</label> <select
+								id="dist-${index}"
+								name="addresses[${index}].district.id"
+								class="form-select org-form-input add-org-form-input">
+								<option value="">Select District</option>
+
+							</select>
+
+							
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">City</label> <input
+								name="addresses[${index}].city"
+								type="text"
+								class="form-control org-form-input add-org-form-input" />
+
+							
+
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">Pincode</label> <input
+								name="addresses[${index}].pincode"
+								type="text"
+								class="form-control org-form-input add-org-form-input" />
+
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">Landmark</label> 
+							<input
+								name="addresses[${index}].landmark"
+								type="text"
+								class="form-control org-form-input add-org-form-input" />
+
+							
+
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="d-flex flex-column">
+							<label class="org-form-label my-2 ">Address Type</label> <select
+								name="addresses[${index}].addressType"
+								class="form-select org-form-input add-org-form-input">
+								<option value="">Select Address Type</option>
+								<option value="current">Current Address</option>
+								<option value="permanent">Permanent Address</option>
+								<option value="other">Other</option>
+							</select>
+
+							
+
+						</div>
+					</div>
+
+
+					
+
+				</div>
+	            
+	            `
+	            container.append(newRowHTML);
+            
+        	}else if(index >= maxRange){ 
+	            //alert("Warning ! you can't added more than 3")
+	            var toast = $('<div class="toast bg-danger">You can not add more than '+ maxRange +' !</div>');
+			     $('body').append(toast);
+			     setTimeout(function() {
+			       toast.addClass('show');
+			       setTimeout(function() {
+			         toast.removeClass('show');
+			         setTimeout(function() {
+			           toast.remove();
+			         }, 5000);
+			       }, 5000);
+			     }, 100);
+	        }
+        });
+
+        $('#remove-address').click(function() {
+        	
+        	 var container = $('#address-container');
+        	 
+        	    if (container.children().length > 1) {
+        	    	container.children().last().remove();
+        	    }else{
+        	    	var toast = $('<div class="toast bg-danger">Warning ! No more extra details to remove.</div>');
+				     $('body').append(toast);
+				     setTimeout(function() {
+				      toast.addClass('show');
+				       setTimeout(function() {
+				        toast.removeClass('show');
+				         setTimeout(function() {
+				          toast.remove();
+				         }, 5000);
+				       }, 5000);
+				     }, 100);
+        	    }
+        });
+    });
+</script>
+
+
+	<!-- Booking Date -->
+	<script>
+		$(document).ready(function() {
+			var today = new Date();
+			var dd = String(today.getDate()).padStart(2, '0');
+			var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+			var yyyy = today.getFullYear();
+
+			today = yyyy + '-' + mm + '-' + dd;
+			$('#bookingDate').val(today);
+		});
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			$('#hazardousMaterial').change(function() {
+				if ($(this).val() == 'true') {
+					$('#explanation').prop('disabled', false);
+				} else {
+					$('#explanation').prop('disabled', true);
+					$('#explanation').attr('placeholder', 'Ignore This Field');
+				}
+			});
+		});
+	</script>
+
+	<script>
+	
+
+	 function calculateAllWeight(){
+		 
+			if(document.getElementById("courier_weight_unit").value.trim()===''){
+				alert('Kindly Choose Weight unit first');
+				return;
+			}
+			
+			
+		var weightSum=0.00;
+		var totalVlm=0.00;
+		
+		
+		var table_rows=document.getElementById("tableBody").rows.length;
+		//alert(table_rows)
+		for(var i=1; i<=table_rows; i++){
+			
+			var volumetricWeight=0.00, height=0.00, width=0.00, length=0.00;
+			
+			
+			height = parseFloat(document.getElementById("height-"+i).value);
+		
+			width = parseFloat(document.getElementById("width-"+i).value);
+			length = parseFloat(document.getElementById("length-"+i).value);
+			
+			// new code
+			var weightUnit=document.getElementById("courier_weight_unit").value;
+			if(weightUnit==="gm-gram"){			
+				volumetricWeight+= ((height*width*length)/5000)*1000; // in gram			
+			}
+			else if(weightUnit==="kg-kilogram"){			
+				volumetricWeight+= ((height*width*length)/5000);	// in kg		
+			}
+			else if(weightUnit==="mg-milligram"){
+				volumetricWeight+= ((height*width*length)/5000)*1000000;	// in mg	
+			}
+			else if(weightUnit==="lb-pound"){
+				volumetricWeight+= ((height*width*length)/5000)*2.20462;	// in pounds	0.001
+			}
+			else if(weightUnit==="t-metric ton"){
+				volumetricWeight+= ((height*width*length)/5000)*0.001;	// in metric tons	
+			}
+			
+			document.getElementById("volumetricWeight-"+i).value=volumetricWeight.toFixed(2);
+			
+			totalVlm+=volumetricWeight;
+			weightSum += parseFloat(document.getElementById("weight-"+i).value);	
+		}
+		
+		
+		console.log("sum: "+ weightSum)
+		console.log("Total Volumetric Weight: "+ totalVlm)
+		
+		document.getElementById("total_weight").value = weightSum > totalVlm ? weightSum.toFixed(2) : totalVlm.toFixed(2);
+		document.getElementById("LabelContent").innerHTML= weightSum.toFixed(2)+" (Weight) | " + totalVlm.toFixed(2)+" (Volumetric Weight)";
+		
+	}
+	
+	</script>
+	<script>
+	
+		function confirmReset() {
+			// Display a confirmation dialog
+			var confirmReset = confirm("Are you sure you want to reset your form data?");
+			// If user confirms, reset the form
+			if (confirmReset) {
+				document.getElementById("myForm").reset(); // Replace "myForm" with the ID of your form
+			}
+
+			if (!confirmReset) {
+				event.preventDefault(); // Prevent the default reset behavior
+			}
+		}
+		
+	</script>
+	<script type="text/javascript">
+	function getDesignation(departmentid){
+		alerts()
+	}
+	</script>
+
+
+</body>
+</html>

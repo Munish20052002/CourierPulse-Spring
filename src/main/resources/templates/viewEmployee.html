@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courier Managment</title>
+
+<link th:href="@{/css/style.css}" rel="stylesheet">
+<link th:href="@{/css/toast.css}" rel="stylesheet">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/custom_table.css}">
+
+
+<!--     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"> -->
+<!-- Remix Icon CDN -->
+<link
+	href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+	rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+</head>
+
+
+
+<body>
+	<main class="d-flex">
+		<!-- Sidebar -->
+		<div th:replace="~{Layout/Fragments/header.html :: header}"></div>
+		<!-- /Sidebar -->
+
+		<!-- Body  -->
+		<div class="main-content p-0">
+			<div th:replace="~{Layout/Fragments/header.html :: topbar}"></div>
+
+			<!-- Message -->
+
+			<!-- Positive Message -->
+			<div th:if="${positiveMessage}">
+				<div
+					th:replace="~{Layout/Fragments/message.html :: positiveMessage}"></div>
+			</div>
+
+			<!-- Negative Message -->
+			<div th:if="${negativeMessage}">
+				<div
+					th:replace="~{Layout/Fragments/message.html :: negativeMessage}"></div>
+			</div>
+
+			<!-- /Message -->
+
+
+
+
+			<!-- Main Page Data  -->
+			<div class="container-fluid px-3 p-0 pb-5">
+				<div
+					class="d-flex flex-wrap gap-2 page-header justify-content-between align-items-center">
+					<h3 class="page-heading">Human Resource > Employee ❯ View
+						Employee(s)</h3>
+					<p class="header-date m-0 " id="current-date"></p>
+				</div>
+
+				<div class="d-flex mb-3">
+					<a href="#" class="back-arrow pback" onclick="goBack()"> <i
+						class="ri-arrow-left-line"></i> <span class="text-danger px-3">Back
+							to Previous Page</span>
+					</a>
+				</div>
+
+				<!-- Main Data Container -->
+				<div class="data-container p-4  bg-primary-subtle">
+					<div class="row justify-content-center">
+						<div class="col-md-11 ">
+
+
+							<div class="row differ my-3">
+								<div class="row gap-2 align-items-end my-3">
+									<div class="col-md-12 col-lg-12">
+										<div class="mini-head mb-1">Search By</div>
+										<div
+											class="d-flex gap-2 flex-wrap justify-content-center mybdr-secondary bg-white "
+											style="border-radius: 7px; padding: 5px 10px;">
+											<div class="switch-btn switch-active"
+												data-target="basic-details">
+												<span class="switch-span"><i class="ri-book-line"></i></span>
+												Basic Details
+
+											</div>
+											<div class="switch-btn" data-target="address-details">
+												<span class="switch-span"><i class="ri-archive-line"></i></span>
+												Address Details
+											</div>
+											<div class="switch-btn" data-target="employee-profile">
+												<span class="switch-span"><i class="ri-archive-line"></i></span>
+												Employee Profile
+											</div>
+											<div class="switch-btn" data-target="bank-details">
+												<span class="switch-span"><i class="ri-archive-line"></i></span>
+												Bank Details
+											</div>
+
+
+
+
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="d-flex flex-column">
+												<div class="mini-head mb-1">Basic Details</div>
+
+												<div id="basic-details" class="search-box"
+													style="display: block;">
+													<table class="table table-bordered mt-2 table-hover">
+														<thead>
+															<tr class="table-primary">
+																<td class="table-head">S/N</td>
+																<td class="table-head">Photo</td>
+																<td class="table-head">Prefix</td>
+																<td class="table-head">Employee Name</td>
+																<td class="table-head">DOB</td>
+																<td class="table-head">Contact</td>
+																<td class="table-head">Alternate Contact</td>
+																<td class="table-head">Email</td>
+																<td class="table-head">Photo</td>
+																<td class="table-head">Gender</td>
+																<td class="table-head">Marital Status</td>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td class="table-text" th:text="${employee.id}"></td>
+																<td class="table-text"><img height="50px"
+																	width="50px" alt="pic"
+																	th:src="@{/photo/{id}(id=${employee.id})}"></td>
+																<td class="table-text" th:text="${employee.prefix}"></td>
+																<td class="table-text" th:text="${employee.firstName}"></td>
+																<td class="table-text" th:text="${employee.lastName}"></td>
+																<td class="table-text" th:text="${employee.dob}"></td>
+																<td class="table-text" th:text="${employee.contact}"></td>
+																<td class="table-text"
+																	th:text="${employee.alternateContact}"></td>
+																<td class="table-text" th:text="${employee.email}"></td>
+																<td class="table-text" th:text="${employee.gender}"></td>
+																<td class="table-text"
+																	th:text="${employee.maritalStatus}"></td>
+
+															</tr>
+
+
+
+
+
+
+														</tbody>
+													</table>
+												</div>
+
+												<div id="address-details" class="search-box"
+													style="display: none;">
+													<table class="table table-bordered mt-2 table-hover">
+														<thead>
+															<tr class="table-primary">
+																<td class="table-head">S/N</td>
+																<td class="table-head">AdressLine 1</td>
+																<td class="table-head">AdressLine 2</td>
+																<td class="table-head">Country</td>
+																<td class="table-head">State</td>
+																<td class="table-head">District</td>
+																<td class="table-head">City</td>
+																<td class="table-head">Pincode</td>
+																<td class="table-head">Landmark</td>
+																<td class="table-head">Address Type</td>
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="add, addStatus : ${employee.addresses}">
+																<td class="table-text" th:text="${addStatus.count}"></td>
+
+																<td class="table-text" th:text="${add.addressLine1}"></td>
+																<td class="table-text" th:text="${add.addressLine2}"></td>
+																<td class="table-text"
+																	th:text="${add.district.state.country.countryName}"></td>
+																<td class="table-text"
+																	th:text="${add.district.state.stateName}"></td>
+																<td class="table-text"
+																	th:text="${add.district.districtName}"></td>
+																<td class="table-text" th:text="${add.city}"></td>
+																<td class="table-text" th:text="${add.pincode}"></td>
+																<td class="table-text" th:text="${add.landmark}"></td>
+																<td class="table-text" th:text="${add.addressType}"></td>
+
+
+															</tr>
+
+
+
+
+
+														</tbody>
+													</table>
+												</div>
+												<div id="employee-profile" class="search-box"
+													style="display: none;">
+													<table class="table table-bordered mt-2 table-hover">
+														<thead>
+															<tr class="table-primary">
+																<td class="table-head">S/N</td>
+																<td class="table-head">Department</td>
+																<td class="table-head">Designation</td>
+																<td class="table-head">Report To (Senior)</td>
+																<td class="table-head">Experience Level</td>
+																<td class="table-head">Salary</td>
+																<td class="table-head">Date Of Joining</td>
+
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td class="table-text" th:text="${employee.id}"></td>
+																<td class="table-text" th:text="${employee?.designation?.department?.departmentName}"></td>
+																<td class="table-text" th:text="${employee?.designation?.designationName}"></td>
+																<td class="table-text" th:text="${employee.senior}"></td>
+																<td class="table-text" th:text="${employee.experienceLevel}"></td>
+																<td class="table-text" th:text="${employee.salary}"></td>
+																<td class="table-text"
+																	th:text="${employee.dateOfJoining}"></td>
+
+
+															</tr>
+
+														</tbody>
+													</table>
+												</div>
+												<div id="bank-details" class="search-box"
+													style="display: none;">
+													<table class="table table-bordered mt-2 table-hover">
+														<thead>
+															<tr class="table-primary">
+																<td class="table-head">S/N</td>
+																<td class="table-head">Account Type</td>
+																<td class="table-head">Bank Name</td>
+																<td class="table-head">Bank Branch Name</td>
+																<td class="table-head">IFSC</td>
+																<td class="table-head">Account Holder Name</td>
+																<td class="table-head">Account Number</td>
+
+															</tr>
+														</thead>
+														<tbody>
+															<tr th:each="add : ${employee.bank}">
+																<td class="table-text" th:text="${employee.id}"></td>
+
+																<td class="table-text" th:text="${add.accountType}"></td>
+																<td class="table-text" th:text="${add.bankName}"></td>
+																<td class="table-text"
+																	th:text="${add.branchName}"></td>
+																<td class="table-text"
+																	th:text="${add.ifscCode}"></td>
+																<td class="table-text"
+																	th:text="${add.accountHolderName}"></td>
+																<td class="table-text" th:text="${add.accountNumber}"></td>
+
+
+
+															</tr>
+
+														</tbody>
+													</table>
+												</div>
+
+
+												<div id="tracking-code-searchbox" class="search-box"
+													style="display: none;">
+													<form th:action="@{searchCourier}" method="get">
+														<div class="d-flex gap-2">
+															<input type="text" name="trackingCode" id="trackingCode"
+																class="form-control org-form-input add-org-form-input"
+																placeholder="Search By Tracking Code">
+															<button type="submit" class="btn btn-success p-1 "
+																style="font-size: 14px;">Search</button>
+														</div>
+													</form>
+												</div>
+
+												<div id="booking-date-searchbox" class="search-box"
+													style="display: none;">
+													<form th:action="@{searchCourier}" method="get">
+														<div class="d-flex gap-2">
+															<input type="date" name="bookingDate" id="bookingDate"
+																class="form-control org-form-input add-org-form-input"
+																placeholder="Search By Booking Date">
+
+															<!-- <input type="text" name="bookingDate" id="bookingDate"
+                                                            class="form-control org-form-input add-org-form-input"
+                                                            placeholder="Search By Booking Date"> -->
+															<button type="submit" class="btn btn-success p-1 "
+																style="font-size: 14px;">Search</button>
+														</div>
+													</form>
+												</div>
+												<div id="courier-status-searchbox" class="search-box"
+													style="display: none;">
+													<form th:action="@{searchCourier}" method="get">
+														<div class="d-flex gap-2">
+															<select name="courierStatus" id="courierStatus"
+																class="form-select org-form-input add-org-form-input">
+																<option value="">Select</option>
+																<option value="Booked">Booked</option>
+															</select>
+															<button type="submit" class="btn btn-success p-1 "
+																style="font-size: 14px;">Search</button>
+														</div>
+													</form>
+												</div>
+
+												<div id="between-date-searchbox" class="search-box"
+													style="display: none;">
+													<form th:action="@{searchCourier}" method="get">
+														<div class="d-flex gap-2">
+															<div class="d-flex flex-column">
+																<label for="start-date" style="font-size: 12px;">Start
+																	Date</label> <input type="date" name="startDate" id="startDate"
+																	class="form-control org-form-input add-org-form-input"
+																	placeholder="Start Date">
+															</div>
+															<div class="d-flex flex-column">
+																<label for="end-date" style="font-size: 12px;">End
+																	Date</label> <input type="date" name="endDate" id="endDate"
+																	class="form-control org-form-input add-org-form-input"
+																	placeholder="End Date">
+															</div>
+
+															<div class="d-flex flex-column justify-content-end">
+																<button type="submit" class="btn btn-success p-1 "
+																	style="font-size: 14px;">Search</button>
+															</div>
+
+
+														</div>
+													</form>
+												</div>
+												<!-- Add other search boxes with unique IDs -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+	</main>
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+	<!-- Custom Js Files  -->
+	<script th:src="@{/js/custom.js}"></script>
+
+
+	<!-- Go Back Button JS -->
+	<script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+	<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const switchBtns = document.querySelectorAll('.switch-btn');
+
+            switchBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+
+                    // Remove switch-active class from all buttons
+                    switchBtns.forEach(btn => {
+                        btn.classList.remove('switch-active');
+                    });
+
+                    // Add switch-active class to the clicked button
+                    this.classList.add('switch-active');
+
+                    // Hide all search boxes
+                    const searchBoxes = document.querySelectorAll('.search-box');
+                    searchBoxes.forEach(box => {
+                        box.style.display = 'none';
+                    });
+
+                    // Determine which search box to display based on the clicked button
+                    const targetId = this.dataset.target;
+
+                    const targetSearchBox = document.getElementById(targetId);
+
+                    if (targetSearchBox) {
+                        targetSearchBox.style.display = 'block';
+                    }
+                });
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bootstrap demo</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+
+<div th:replace="~{common/frangments :: Sidebar}"></div>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Form Section -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h2 class="text-center">Country Form</h2>
+                <form method="post" th:object="${country}" th:action="@{/saveCountry}">
+                    <input type="hidden" th:field="*{id}">
+                    <div th:if="${successMessage != null}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+                    <div th:if="${dangerMessage != null}" class="alert alert-danger" role="alert" th:text="${dangerMessage}"></div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Country Name</label>
+                        <input type="text" th:field="*{countryName}" class="form-control">
+                        <span th:if="${#fields.hasErrors('countryName')}" th:errors="*{countryName}" class="text-danger"></span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h2 class="text-center">Country List</h2>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">S/N</th>
+                            <th scope="col">Country Name</th>
+                            <th scope="col">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="country, countryStatus : ${countryList}">
+                            <th scope="row" th:text="${countryStatus.index+1}"></th>
+                            <td th:text="${country.countryName}"></td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" th:href="@{/updateCountry(id=${country.id})}">Update</a>
+                                <a class="btn btn-danger btn-sm" th:href="@{/deleteCountry(id=${country.id})}">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadDoc() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("demo").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "ajax_info.txt", true);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>

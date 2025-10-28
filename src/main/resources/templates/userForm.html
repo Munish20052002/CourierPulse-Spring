@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+
+<title>Hello, world!</title>
+
+<script type="text/javascript">
+	function getStates(countryId, targetElement) {
+		console.log("Hello I am in getState function, the countryId is: "
+				+ countryId);
+		console.log("targetElement:  "
+				+ targetElement);
+
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/myapp/getStatesByCountryId?countryId=" + countryId);
+
+		xhttp.onload = function() {
+
+			if (xhttp.status == 200) {
+
+				console.log("response: ", this.responseText);
+				document.getElementById(targetElement).innerHTML = this.responseText;
+
+			}
+		}
+
+		xhttp.send();
+
+	}
+	function getDistricts(stateId, target) {
+	    console.log("Hello, I am in the getDistrict function, the State ID is: " + stateId);
+	    console.log("target: " + target);
+
+	    const xhttp = new XMLHttpRequest();
+	    xhttp.open("GET", "/myapp/getDistrictsByStateId?stateId=" + stateId);
+
+	    xhttp.onload = function() {
+	        if (xhttp.status == 200) {
+	            console.log("response: ", this.responseText);
+	            
+	            // Check if the target element exists
+	            const targetElement = document.getElementById(target);
+	            if (targetElement) {
+	                targetElement.innerHTML = this.responseText;
+	            } else {
+	                console.error("Element with ID " + target + " not found.");
+	            }
+	        } else {
+	            console.error("Request failed. Status: " + xhttp.status);
+	        }
+	    };
+
+	    xhttp.onerror = function() {
+	        console.error("Request error occurred.");
+	    };
+
+	    xhttp.send();
+	}
+
+</script>
+ <style>
+        .round-image {
+            width: 150px; /* Set the desired width */
+            height: 150px; /* Set the desired height */
+            border-radius: 50%; /* Makes the image circular */
+            overflow: hidden;
+        }
+        .round-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the container */
+        }
+        
+    </style>
+</head>
+<body>
+	<div class="container">
+		<h1>Human Resources</h1>
+	</div>
+	<form method="POST" th:action="@{/saveUser}" th:object="${user}">
+		<div class="mt-5 ms-5 me-5" th:if="${successMessage != null}">
+			<div class="alert alert-success" role="alert"
+				th:text="${successMessage}"></div>
+		</div>
+		<div class="alert alert-danger mt-5 ms-5 me-5" role="alert"
+			th:if="${dangerMessage != null}" th:text="${dangerMessage}">A
+			simple danger alert—check it out!</div>
+
+		<div class="container border border-primary">
+
+			<h3 class="mb-10">
+				Personal <sub>Details</sub>
+				<hr>
+			</h3>
+
+
+
+			<div class="row">
+
+				<div class="col-6">
+					<div class="row">
+						<div class="col-4">
+							<label for="exampleInputEmail1" class="form-label">Name <span
+								style="color: red">*</span>
+							</label>
+						</div>
+						<div class="col-8">
+							<input th:field="*{name}" type="text" class="form-control"
+								aria-describedby="emailHelp"> <span
+								th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+								style="color: red"></span>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-6">
+					<div class="row">
+						<div class="col-4">
+							<!-- <label for="exampleInputEmail1" class="form-label">Contact
+								<span style="color: red">*</span>
+							</label> -->
+							<div class="round-image m-2 ">
+								<img src="‪@{\C:\Users\hpwor\OneDrive\Desktop\user-avatar.png}" alt="">
+							</div>
+							<label for="imageUpload">Choose an image:</label> <input
+								type="file" id="imageUpload" name="image" accept="image/*">
+							<span style="color: red">*Image size should be less than
+								800 KB</span>
+						</div>
+						<!-- <div class="col-8">
+							<input th:field="*{contact}" type="text" class="form-control"
+								aria-describedby="emailHelp"> <span
+								th:if="${#fields.hasErrors('contact')}" th:errors="*{contact}"
+								style="color: red"></span>
+						</div> -->
+					</div>
+
+				</div>
+
+			</div>
+
+
+
+
+			<div id="address-container">
+				<div class="container p-5 mt-2"
+					th:each="address, addressStatus : *{addresses}">
+
+					<div class="row">
+						<h3 class="text-center text-info mb-5">User Address Details</h3>
+						<div class="col-6">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">Address
+										Line-1 <span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<input
+										th:field="*{addresses[__${addressStatus.index}__].addressLine1}"
+										type="text" class="form-control" aria-describedby="emailHelp">
+									<span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].addressLine1')}"
+										th:errors="*{addresses[__${addressStatus.index}__].addressLine1}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">Address
+										Line-2</label>
+								</div>
+								<div class="col-8">
+									<input
+										th:field="*{addresses[__${addressStatus.index}__].addressLine2}"
+										type="text" class="form-control" aria-describedby="emailHelp">
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6 mt-2">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">City
+										<span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<input th:field="*{addresses[__${addressStatus.index}__].city}"
+										type="text" class="form-control" aria-describedby="emailHelp">
+									<span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].city')}"
+										th:errors="*{addresses[__${addressStatus.index}__].city}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6 mt-2">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">Country
+										<span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<select
+										th:field="*{addresses[__${addressStatus.index}__].district.state.country.id}"
+										th:onchange="|getStates(this.value, 'state-${addressStatus.index}')|"
+										class="form-select" aria-label="Default select example"
+										id="country">
+										<option value="">Select Country</option>
+										<option th:each="c : ${countries}" th:value="${c.id}"
+											th:text="${c.countryName}">India</option>
+
+									</select> <span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].district.state.country.id')}"
+										th:errors="*{addresses[__${addressStatus.index}__].district.state.country.id}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6 mt-2">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">State
+										<span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<select th:id="state-+${addressStatus.index}"
+										th:field="*{addresses[__${addressStatus.index}__].district.state.id}"
+										th:onchange="|getDistricts(this.value, 'dist-${addressStatus.index}')|"
+										class="form-select" aria-label="Default select example">
+										<option value="">Select State</option>
+
+									</select> <span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].district.state.id')}"
+										th:errors="*{addresses[__${addressStatus.index}__].district.state.id}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6 mt-2">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">District
+										<span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<select th:id="dist-+${addressStatus.index}"
+										th:field="*{addresses[__${addressStatus.index}__].district.id}"
+										class="form-select" aria-label="Default select example">
+										<option value="">Select District</option>
+
+									</select> <span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].district.id')}"
+										th:errors="*{addresses[__${addressStatus.index}__].district.id}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-6 mt-2">
+							<div class="row">
+								<div class="col-4">
+									<label for="exampleInputEmail1" class="form-label">Pincode
+										<span style="color: red">*</span>
+									</label>
+								</div>
+								<div class="col-8">
+									<input
+										th:field="*{addresses[__${addressStatus.index}__].pincode}"
+										type="text" class="form-control" aria-describedby="emailHelp">
+									<span
+										th:if="${#fields.hasErrors('addresses[__${addressStatus.index}__].pincode')}"
+										th:errors="*{addresses[__${addressStatus.index}__].pincode}"
+										style="color: red"></span>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+
+
+
+
+
+
+			</div>
+		</div>
+
+
+
+
+		<div class="text-center mt-5 mb-5">
+
+			<button type="button" onclick="addAddressSection();"
+				class="btn btn-primary me-2">Add More</button>
+			<button type="button" onclick="removeAddressSection();"
+				class="btn btn-danger">Remove</button>
+
+		</div>
+
+		<div class="container">
+			<div class="d-flex justify-content-between mt-5 mb-5">
+
+				<button type="submit" class=" btn btn-primary">Submit</button>
+				<button type="Reset" class="btn btn-danger">Reset</button>
+
+			</div>
+		</div>
+
+	</form>
+
+
+
+	<!-- Option 1: Bootstrap Bundle with Popper -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+
+	<script type="text/javascript">
+		var container = document.getElementById('address-container');
+		let index = container.children.length;
+		console.log("index: "+ index);
+		const maxField = 5;
+		var countryOption = document.getElementById("country").innerHTML;
+		
+		console.log("countryOption"+ countryOption);
+		
+		var stateElement = document.getElementById("state-0");
+
+		if (stateElement) {
+		    var stateOption = stateElement.innerHTML;
+		    console.log("stateOption: " + stateOption);
+		} else {
+		    console.error("Element with ID 'state' not found.");
+		}
+
+
+		
+		function addAddressSection(){
+				console.log("Add button is clicked!");
+				//addresses[0].addressLine1
+				
+				
+				if(index<maxField){
+						const newSection = `<div class="container border border-primary p-5 mt-2">
+		
+							<div class="row">
+								<h3 class="text-center text-info mb-5">User Address Details</h3>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">Address
+												Line-1 <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<input name="addresses[${index}].addressLine1" type="text" class="form-control"
+												aria-describedby="emailHelp">
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">Address
+												Line-2</label>
+										</div>
+										<div class="col-8">
+											<input name="addresses[${index}].addressLine2" type="text" class="form-control"
+												aria-describedby="emailHelp">
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6 mt-2">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label" >City <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<input name="addresses[${index}].city" type="text" class="form-control"
+												aria-describedby="emailHelp">
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6 mt-2">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">Country <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<select name="addresses[${index}].district.state.country.id" onchange="getStates(this.value, 'state-${index}')" class="form-select"
+												aria-label="Default select example">
+												
+												${countryOption}
+												
+												
+		
+											</select>
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6 mt-2">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">State <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<select id="state-${index}" name="addresses[${index}].district.state.id" onchange="getDistricts(this.value, 'dist-${index}')" id="state"
+												class="form-select" aria-label="Default select example">
+											/* ${stateOption} */
+											<option value="">Select State</option>
+		
+											</select>
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6 mt-2">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">District <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<select id="dist-${index}" name="addresses[${index}].district.id" id="dist" class="form-select"
+												aria-label="Default select example">
+												<option value="">Select District</option>
+		
+											</select>
+										</div>
+									</div>
+		
+								</div>
+								<div class="col-6 mt-2">
+									<div class="row">
+										<div class="col-4">
+											<label for="exampleInputEmail1" class="form-label">Pincode <span style="color: red">*</span></label>
+										</div>
+										<div class="col-8">
+											<input name="addresses[${index}].pincode" type="text" class="form-control"
+												aria-describedby="emailHelp">
+										</div>
+									</div>
+		
+								</div>
+		
+							</div>
+					</div>`;
+			
+			
+			
+			
+				container.insertAdjacentHTML("beforeend", newSection);
+				index++
+			}else{
+				alert("You can't add more than "+ maxField);
+			}
+			
+				
+			}
+		
+		
+		function removeAddressSection(){
+			if(index>1){
+				var lastElement = container.lastElementChild;
+				
+				lastElement.remove();
+				index--;
+			}else{
+				alert("There is no section to remove!");
+			}
+			
+			
+		}
+		
+		</script>
+
+</body>
+</html>

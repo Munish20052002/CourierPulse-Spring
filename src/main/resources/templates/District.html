@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css"rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script> -->
+<title>Country</title>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+	integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Remix Icon CDN -->
+<link
+	href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+	rel="stylesheet" />
+
+<link th:href="@{/css/style.css}" rel="stylesheet">
+<link th:href="@{/css/toast.css}" rel="stylesheet">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/custom_table.css}">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+	function getDistricts(countryId) {
+		console.log("Hello I am in getDistrict function, the countryId is: "
+				+ countryId);
+
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/myapp/getStatesByCountryId?countryId=" + countryId);
+
+		xhttp.onload = function() {
+
+			if (xhttp.status == 200) {
+
+				console.log("response: ", this.responseText);
+				document.getElementById("state").innerHTML = this.responseText;
+
+			}
+		}
+
+		xhttp.send();
+
+	}
+</script>
+</head>
+<body style="background-color: gray;">
+
+
+
+
+	<!-- Sidebar -->
+	<div th:replace="Layout/Fragments/header.html :: header"></div>
+	<!-- Sidebar Ended Here  -->
+
+	
+	
+	
+	
+	<div class="main-content p-0 h-100" >
+        <div th:replace="Layout/Fragments/header.html :: topbar"></div>
+
+        <div class="container row pb-3 mt-5">
+
+            <!-- Updated Form Section -->
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center" >District Form</h5>
+
+                        <form method="post" th:action="@{/saveDistrict}"
+								th:object="${district}">
+
+
+									<input th:field="*{id}" type="hidden">
+
+								<div style="margin-bottom: 25px" class="input-group">
+									<div class="col-3">
+									<label for="countrycode" class="me-3"> Country Name</label> 
+									</div>
+									
+									<div class="col-9">
+									<select
+										th:field="*{state.country.id}" class="form-select"
+										aria-label="Default select example"
+										onchange="getDistricts(this.value);">
+										<option value="">Select Country</option>
+										<option th:each="c : ${countries}" th:value="${c.id}"
+											th:text="${c.countryName}">India</option>
+
+									</select>
+									</div>
+									 <span th:if="${#fields.hasErrors('state.country.id')}"
+										th:errors="*{state.country.id}" style="color: red"></span>
+
+								</div>
+								<div class="row">
+									<div style="margin-bottom: 25px" class="input-group">
+										<div class="col-3">
+											<label for="countrycode" class="me-3"> State Name</label>
+										</div>
+										<div class="col-9">
+											<select id="state" th:field="*{state.id}" class="form-select"
+												aria-label="Default select example">
+												<option value="">Select State</option>
+												<option th:each="s : ${states}" th:value="${s.id}"
+													th:text="${s.stateName}">India</option>
+
+											</select> <span th:if="${#fields.hasErrors('state.id')}"
+												th:errors="*{state.id}" style="color: red"></span>
+
+										</div>
+
+									</div>
+								</div>
+
+								<div class="row">
+									<div style="margin-bottom: 25px" class="input-group">
+
+										<div class="col-3">
+											<label for="countrycode" class="me-3"> District</label>
+										</div>
+										<div class="col-9">
+											<input type="text" class="form-control"
+												th:field="*{DistrictName}"> <span
+												th:if="${#fields.hasErrors('DistrictName')}"
+												th:errors="*{DistrictName}" style="color: red"></span>
+
+										</div>
+									</div>
+
+								</div>
+
+
+
+
+								<div class="form-group">
+									<div class="text-center controls">
+										<button type="reset" class="btn btn-reset">Cancel</button>
+										<button type="submit" class="btn btn-primary">Save</button>
+									</div>
+								</div>
+							</form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+								<thead>
+									<tr>
+										<th scope="col">S/N</th>
+										<th scope="col">Country</th>
+										<th scope="col">State</th>
+										<th scope="col">District</th>
+										<th scope="col">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="dist, distStatus : ${allDistrict}">
+										<th scope="row" th:text="${distStatus.index+1}">1</th>
+										<td th:text="${dist.state.country.countryName}">hii</td>
+										<td th:text="${dist.state.stateName}"></td>
+										<td th:text="${dist.districtName}"></td>
+
+										<td><a type="button" class="btn btn-primary"
+											th:href="@{/editDistrict(id=${dist.id})}">Edit</a> <a
+											type="button" class="btn btn-danger"
+											th:href="@{/deleteDistrict(id=${dist.id})}">Delete</a></td>
+									</tr>
+
+
+								</tbody>
+							</table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Footer Include -->
+		 <div th:replace="Layout/Fragments/footer.html :: footer"></div>
+
+
+    </div>
+    
+	<!-- </div>
+	
+	</div> -->
+
+
+
+
+	<script th:src="@{/js/custom.js}"></script>
+
+</body>
+</html>
